@@ -8,15 +8,8 @@ import { toast } from "sonner";
 
 import UploadSection from '../components/script/UploadSection';
 import AnalysisProgress from '../components/script/AnalysisProgress';
-import AnalysisSummary from '../components/script/AnalysisSummary';
-import SceneBreakdown from '../components/script/SceneBreakdown';
-import CharacterBreakdown from '../components/script/CharacterBreakdown';
-import LocationBreakdown from '../components/script/LocationBreakdown';
-import ElementsGrid from '../components/script/ElementsGrid';
-import BudgetEstimate from '../components/script/BudgetEstimate';
-import GenreAnalysis from '../components/script/GenreAnalysis';
-import ChallengesPanel from '../components/script/ChallengesPanel';
-import ExportJSON from '../components/script/ExportJSON';
+import PDFViewer from '../components/script/PDFViewer';
+import AnalysisPanel from '../components/script/AnalysisPanel';
 import HistoryList from '../components/script/HistoryList';
 
 const ScriptAnalysis = base44.entities.ScriptAnalysis;
@@ -25,6 +18,9 @@ export default function Home() {
   const [currentAnalysis, setCurrentAnalysis] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showUpload, setShowUpload] = useState(true);
+  const [pdfMinimized, setPdfMinimized] = useState(false);
+  const [analysisMinimized, setAnalysisMinimized] = useState(false);
+  const [highlightedElement, setHighlightedElement] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: analyses = [], isLoading } = useQuery({
@@ -351,116 +347,113 @@ Also provide:
 
   const showResults = currentAnalysis?.status === 'completed';
   const showProgress = currentAnalysis && !showResults && (isProcessing || currentAnalysis.status !== 'completed');
+  const showSplitView = showResults && !pdfMinimized && !analysisMinimized;
 
   return (
-    <div className="min-h-screen bg-zinc-950">
+    <div className="min-h-screen bg-zinc-950 flex flex-col">
       {/* Background Gradient */}
       <div className="fixed inset-0 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950" />
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-900/10 via-transparent to-transparent" />
       
-      <div className="relative z-10 container mx-auto px-4 py-8 max-w-7xl">
-        {/* Header Actions */}
-        {!showUpload && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center justify-between mb-8"
-          >
-            <Button
-              variant="ghost"
-              onClick={handleNewAnalysis}
-              className="text-zinc-400 hover:text-white hover:bg-zinc-800"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-            <Button
-              onClick={handleNewAnalysis}
-              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-black"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              New Analysis
-            </Button>
-          </motion.div>
-        )}
-
-        <AnimatePresence mode="wait">
-          {showUpload && (
-            <motion.div
-              key="upload"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="space-y-8"
-            >
-              <div className="flex justify-center py-12">
-                <UploadSection 
-                  onAnalysisStart={handleAnalysisStart} 
-                  isProcessing={createMutation.isPending}
-                />
-              </div>
-              
-              <div className="max-w-2xl mx-auto">
-                <HistoryList
-                  analyses={analyses}
-                  onSelect={handleSelectAnalysis}
-                  onDelete={(id) => deleteMutation.mutate(id)}
-                  selectedId={currentAnalysis?.id}
-                />
-              </div>
-            </motion.div>
+      <div className="relative z-10 flex-1 flex flex-col">
+        {/* Top Bar */}
+        <div className="border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-sm">
+          {/* Header Actions */}
+          {!showUpload && (
+            <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+              <Button
+                variant="ghost"
+                onClick={handleNewAnalysis}
+                className="text-zinc-400 hover:text-white hover:bg-zinc-800"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+              {currentAnalysis && (
+                <h2 className="text-lg font-semibold text-white">{currentAnalysis.title}</h2>
+              )}
+              <Button
+                onClick={handleNewAnalysis}
+                className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-black"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                New Analysis
+              </Button>
+            </div>
           )}
+        </div>
 
-          {showProgress && (
-            <motion.div
-              key="progress"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <AnalysisProgress status={currentAnalysis?.status || 'processing'} />
-            </motion.div>
-          )}
+        {/* Main Content */}
+        <div className="flex-1 flex overflow-hidden">
+          <AnimatePresence mode="wait">
+            {showUpload && (
+              <motion.div
+                key="upload"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex-1 overflow-auto"
+              >
+                <div className="container mx-auto px-4 py-8 max-w-7xl space-y-8">
+                  <div className="flex justify-center py-12">
+                    <UploadSection 
+                      onAnalysisStart={handleAnalysisStart} 
+                      isProcessing={createMutation.isPending}
+                    />
+                  </div>
+                  
+                  <div className="max-w-2xl mx-auto">
+                    <HistoryList
+                      analyses={analyses}
+                      onSelect={handleSelectAnalysis}
+                      onDelete={(id) => deleteMutation.mutate(id)}
+                      selectedId={currentAnalysis?.id}
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
-          {showResults && (
-            <motion.div
-              key="results"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="space-y-8"
-            >
-              <AnalysisSummary analysis={currentAnalysis} />
+            {showProgress && (
+              <motion.div
+                key="progress"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex-1 overflow-auto"
+              >
+                <div className="container mx-auto px-4 py-8">
+                  <AnalysisProgress status={currentAnalysis?.status || 'processing'} />
+                </div>
+              </motion.div>
+            )}
 
-              <SceneBreakdown scenes={currentAnalysis.scenes} />
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <CharacterBreakdown characters={currentAnalysis.characters} />
-                <LocationBreakdown locations={currentAnalysis.locations} />
-              </div>
-
-              <ElementsGrid
-                props={currentAnalysis.props}
-                wardrobe={currentAnalysis.wardrobe}
-                vehicles_animals={currentAnalysis.vehicles_animals}
-                vfx_sfx={currentAnalysis.vfx_sfx}
-              />
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <BudgetEstimate
-                  budget_estimate={currentAnalysis.budget_estimate}
-                  budget_tier={currentAnalysis.budget_tier}
-                  onTierChange={handleBudgetTierChange}
+            {showResults && (
+              <motion.div
+                key="results"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex-1 flex overflow-hidden"
+              >
+                {/* Split View */}
+                <PDFViewer
+                  fileUrl={currentAnalysis.file_url}
+                  isMinimized={pdfMinimized}
+                  onToggleMinimize={() => setPdfMinimized(!pdfMinimized)}
                 />
-                <GenreAnalysis genre_analysis={currentAnalysis.genre_analysis} />
-              </div>
-
-              <ChallengesPanel challenges={currentAnalysis.challenges} />
-
-              <ExportJSON analysis={currentAnalysis} />
-            </motion.div>
-          )}
-        </AnimatePresence>
+                
+                <AnalysisPanel
+                  analysis={currentAnalysis}
+                  isMinimized={analysisMinimized}
+                  onToggleMinimize={() => setAnalysisMinimized(!analysisMinimized)}
+                  highlightedElement={highlightedElement}
+                  onBudgetTierChange={handleBudgetTierChange}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
