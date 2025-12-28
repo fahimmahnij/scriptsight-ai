@@ -4,6 +4,10 @@ import { Button } from "@/components/ui/button";
 import { motion } from 'framer-motion';
 
 import AnalysisSummary from './AnalysisSummary';
+import LoglineSynopsis from './LoglineSynopsis';
+import HerosJourney from './HerosJourney';
+import ThreeActStructure from './ThreeActStructure';
+import EightSequences from './EightSequences';
 import SceneBreakdown from './SceneBreakdown';
 import CharacterBreakdown from './CharacterBreakdown';
 import LocationBreakdown from './LocationBreakdown';
@@ -65,6 +69,15 @@ export default function AnalysisPanel({
       {/* Scrollable Content */}
       <div className="flex-1 overflow-auto p-6 space-y-8">
         <AnalysisSummary analysis={analysis} />
+        
+        <LoglineSynopsis logline={analysis.logline} synopsis={analysis.synopsis} />
+        
+        <div className="grid grid-cols-1 gap-8">
+          <HerosJourney heros_journey={analysis.heros_journey} />
+          <ThreeActStructure three_act_structure={analysis.three_act_structure} />
+          <EightSequences eight_sequences={analysis.eight_sequences} />
+        </div>
+        
         <SceneBreakdown scenes={analysis.scenes} highlightedScene={highlightedElement?.scene} />
         
         <div className="grid grid-cols-1 gap-8">

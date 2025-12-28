@@ -96,9 +96,41 @@ IMPORTANT: This is the full script. Make sure to analyze ALL scenes, ALL charact
 SCRIPT TEXT:
 ${scriptText.slice(0, 350000)}
 
-Perform comprehensive analysis of the ENTIRE screenplay:
+Perform comprehensive analysis of the ENTIRE screenplay IN THIS ORDER:
 
-0. SCENE-BY-SCENE BREAKDOWN:
+0. LOGLINE & SYNOPSIS:
+- Create a compelling one-sentence logline following: "[Protagonist] must [Goal] before [Antagonist/Stakes] or else [Consequence]"
+- Write a 150-word synopsis covering: protagonist's ordinary world, inciting incident, main conflict, key turning points, climax, resolution, and central theme
+
+1. STRUCTURAL BREAKDOWN:
+
+A. HERO'S JOURNEY (12 Stages):
+Map the script to Joseph Campbell's monomyth. For each stage provide:
+- stage: name (e.g., "Ordinary World", "Call to Adventure", etc.)
+- page_range: e.g., "Pages 1-12"
+- scene_reference: brief description of the scene
+- narrative_purpose: what this stage accomplishes
+
+The 12 stages are: Ordinary World, Call to Adventure, Refusal of the Call, Meeting the Mentor, Crossing the Threshold, Tests/Allies/Enemies, Approach to Inmost Cave, Ordeal, Reward, The Road Back, Resurrection, Return with the Elixir
+
+B. THREE-ACT STRUCTURE:
+Divide into Act I (Setup ~25%), Act II (Confrontation ~50%), Act III (Resolution ~25%)
+For each act provide:
+- page_range: e.g., "Pages 1-30"
+- percentage: % of total pages
+- emotional_arc: primary emotional journey
+- turning_points: array of key moments (Catalyst, Break into 2, Midpoint, All Is Lost, Break into 3, Finale)
+
+C. EIGHT-SEQUENCE STRUCTURE:
+Break into 8 sequences of ~12-15 pages each
+For each sequence provide:
+- sequence_letter: "A" through "H"
+- title: creative title for the sequence
+- page_range: e.g., "Pages 1-12"
+- key_scenes: array of 3-4 bullet points
+- narrative_function: what this sequence accomplishes
+
+2. SCENE-BY-SCENE BREAKDOWN:
 - Extract EVERY scene with its scene number (1, 2, 3, etc.)
 - For each scene provide:
   * scene_number: sequential number (1, 2, 3...)
@@ -110,7 +142,7 @@ Perform comprehensive analysis of the ENTIRE screenplay:
   * summary: 1-2 sentence summary of what happens in this scene
   * characters_present: array of character names in this scene
 
-1. ELEMENT BREAKDOWN (scan through ALL scenes):
+3. ELEMENT BREAKDOWN (scan through ALL scenes):
 - Extract ALL CHARACTERS from the entire script (name, estimated age range, gender if indicated, count ALL scenes they appear in, special requirements)
 - Identify lead roles (appears in 30%+ of scenes, has significant dialogue throughout)
 - Extract ALL PROPS from every scene (categorize as "common", "specialty", or "weapons_stunts")
@@ -123,12 +155,12 @@ Perform comprehensive analysis of the ENTIRE screenplay:
 - For each unique location: int_ext, time_of_day, brief description, total scene count
 - Make sure to count all occurrences of each location throughout the script
 
-3. BUDGET ESTIMATE for "indie" tier:
+4. BUDGET ESTIMATE for "indie" tier:
 - Based on total cast size, location count, VFX shots, and special requirements
 - Provide realistic min and max estimates in USD
 - List top 3-5 cost drivers based on entire script
 
-4. GENRE & TONE (analyze complete narrative arc):
+5. GENRE & TONE (analyze complete narrative arc):
 - Primary genre and sub-genres based on full story
 - Confidence score (0-100)
 - Humor scale: "slapstick", "dry", or "none"
@@ -136,7 +168,7 @@ Perform comprehensive analysis of the ENTIRE screenplay:
 - Visual style: "gritty", "naturalistic", or "stylized"
 - 2-3 comparable films that match the overall tone
 
-5. PRODUCTION CHALLENGES (scan entire script):
+6. PRODUCTION CHALLENGES (scan entire script):
 - Find ALL potential challenges throughout the script
 - Category: "logistical", "legal", "scheduling", or "safety"
 - Description of each challenge
@@ -149,6 +181,65 @@ Also provide:
         response_json_schema: {
           type: "object",
           properties: {
+            logline: { type: "string" },
+            synopsis: { type: "string" },
+            heros_journey: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  stage: { type: "string" },
+                  page_range: { type: "string" },
+                  scene_reference: { type: "string" },
+                  narrative_purpose: { type: "string" }
+                }
+              }
+            },
+            three_act_structure: {
+              type: "object",
+              properties: {
+                act_one: {
+                  type: "object",
+                  properties: {
+                    page_range: { type: "string" },
+                    percentage: { type: "number" },
+                    emotional_arc: { type: "string" },
+                    turning_points: { type: "array", items: { type: "string" } }
+                  }
+                },
+                act_two: {
+                  type: "object",
+                  properties: {
+                    page_range: { type: "string" },
+                    percentage: { type: "number" },
+                    emotional_arc: { type: "string" },
+                    turning_points: { type: "array", items: { type: "string" } }
+                  }
+                },
+                act_three: {
+                  type: "object",
+                  properties: {
+                    page_range: { type: "string" },
+                    percentage: { type: "number" },
+                    emotional_arc: { type: "string" },
+                    turning_points: { type: "array", items: { type: "string" } }
+                  }
+                }
+              }
+            },
+            eight_sequences: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  sequence_letter: { type: "string" },
+                  title: { type: "string" },
+                  page_range: { type: "string" },
+                  key_scenes: { type: "array", items: { type: "string" } },
+                  narrative_function: { type: "string" }
+                }
+              }
+            },
             total_pages: { type: "number" },
             total_scenes: { type: "number" },
             scenes: {
