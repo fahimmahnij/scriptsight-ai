@@ -37,7 +37,7 @@ const ScaleIndicator = ({ label, value, leftLabel, rightLabel, color }) => {
   );
 };
 
-export default function GenreAnalysis({ genre_analysis = {} }) {
+export default function GenreAnalysis({ genre_analysis }) {
   const {
     primary_genre,
     sub_genres = [],
@@ -46,7 +46,7 @@ export default function GenreAnalysis({ genre_analysis = {} }) {
     pacing_scale,
     visual_style,
     comparable_films = []
-  } = genre_analysis;
+  } = genre_analysis || {};
 
   if (!primary_genre) {
     return (

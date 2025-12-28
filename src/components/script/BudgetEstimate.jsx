@@ -16,8 +16,8 @@ const formatCurrency = (num) => {
   return `$${num.toLocaleString()}`;
 };
 
-export default function BudgetEstimate({ budget_estimate = {}, budget_tier = 'indie', onTierChange }) {
-  const { min, max, top_cost_drivers = [] } = budget_estimate;
+export default function BudgetEstimate({ budget_estimate, budget_tier = 'indie', onTierChange }) {
+  const { min, max, top_cost_drivers = [] } = budget_estimate || {};
 
   const tierInfo = {
     micro: { label: 'Micro-Budget', range: '$50K - $500K', color: 'text-emerald-400' },
