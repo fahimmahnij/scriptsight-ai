@@ -87,51 +87,56 @@ export default function Home() {
       // Update status to analyzing
       await updateMutation.mutateAsync({
         id: analysis.id,
-        data: { status: 'analyzing', raw_text: scriptText.slice(0, 50000) }
+        data: { status: 'analyzing', raw_text: scriptText.slice(0, 200000) }
       });
 
-      // Run comprehensive AI analysis
+      // Run comprehensive AI analysis (process up to 150+ pages)
       const analysisResult = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a professional film script analyst. Analyze this screenplay and extract detailed production data.
+        prompt: `You are a professional film script analyst. Analyze this COMPLETE screenplay and extract detailed production data from the ENTIRE script.
+
+IMPORTANT: This is the full script. Make sure to analyze ALL scenes, ALL characters, ALL locations throughout the entire screenplay, not just the beginning.
 
 SCRIPT TEXT:
-${scriptText.slice(0, 40000)}
+${scriptText.slice(0, 350000)}
 
-Perform the following analyses:
+Perform comprehensive analysis of the ENTIRE screenplay:
 
-1. ELEMENT BREAKDOWN:
-- Extract all CHARACTERS (name, estimated age range, gender if indicated, count scenes they appear in, special requirements like "must play piano")
-- Identify if each character is a lead role (appears in many scenes, has significant dialogue)
-- Extract all PROPS (categorize as "common", "specialty", or "weapons_stunts")
-- Extract notable WARDROBE items with character and period info
-- Extract VEHICLES and ANIMALS
-- Identify VFX and SFX shots (type: "vfx" or "sfx", complexity: "simple", "moderate", or "complex")
+1. ELEMENT BREAKDOWN (scan through ALL scenes):
+- Extract ALL CHARACTERS from the entire script (name, estimated age range, gender if indicated, count ALL scenes they appear in, special requirements)
+- Identify lead roles (appears in 30%+ of scenes, has significant dialogue throughout)
+- Extract ALL PROPS from every scene (categorize as "common", "specialty", or "weapons_stunts")
+- Extract ALL notable WARDROBE items with character and period info
+- Extract ALL VEHICLES and ANIMALS mentioned anywhere in the script
+- Identify ALL VFX and SFX shots throughout (type: "vfx" or "sfx", complexity: "simple", "moderate", or "complex")
 
-2. LOCATION BREAKDOWN:
-- Parse all sluglines (INT/EXT. LOCATION - TIME)
-- For each unique location: int_ext, time_of_day, brief description, scene count
+2. LOCATION BREAKDOWN (parse ALL sluglines):
+- Find EVERY slugline in the script (INT/EXT. LOCATION - TIME)
+- For each unique location: int_ext, time_of_day, brief description, total scene count
+- Make sure to count all occurrences of each location throughout the script
 
 3. BUDGET ESTIMATE for "indie" tier:
-- Provide min and max estimates in USD
-- List top 3 cost drivers
+- Based on total cast size, location count, VFX shots, and special requirements
+- Provide realistic min and max estimates in USD
+- List top 3-5 cost drivers based on entire script
 
-4. GENRE & TONE:
-- Primary genre and sub-genres
+4. GENRE & TONE (analyze complete narrative arc):
+- Primary genre and sub-genres based on full story
 - Confidence score (0-100)
 - Humor scale: "slapstick", "dry", or "none"
-- Pacing: "meditative", "medium", or "frenetic"
+- Pacing: "meditative", "medium", or "frenetic"  
 - Visual style: "gritty", "naturalistic", or "stylized"
-- 2-3 comparable films
+- 2-3 comparable films that match the overall tone
 
-5. PRODUCTION CHALLENGES:
+5. PRODUCTION CHALLENGES (scan entire script):
+- Find ALL potential challenges throughout the script
 - Category: "logistical", "legal", "scheduling", or "safety"
-- Description of the challenge
+- Description of each challenge
 - Severity: "low", "medium", or "high"
 - Scene reference if applicable
 
 Also provide:
-- total_pages (estimate based on text length, assume 1 page ≈ 1 minute ≈ 250 words)
-- total_scenes (count of unique sluglines)`,
+- total_pages (estimate based on full text length, assume 1 page ≈ 1 minute ≈ 250 words)
+- total_scenes (count ALL unique sluglines in the entire script)`,
         response_json_schema: {
           type: "object",
           properties: {
