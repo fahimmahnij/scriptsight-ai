@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import UploadSection from '../components/script/UploadSection';
 import AnalysisProgress from '../components/script/AnalysisProgress';
 import AnalysisSummary from '../components/script/AnalysisSummary';
+import SceneBreakdown from '../components/script/SceneBreakdown';
 import CharacterBreakdown from '../components/script/CharacterBreakdown';
 import LocationBreakdown from '../components/script/LocationBreakdown';
 import ElementsGrid from '../components/script/ElementsGrid';
@@ -101,6 +102,18 @@ ${scriptText.slice(0, 350000)}
 
 Perform comprehensive analysis of the ENTIRE screenplay:
 
+0. SCENE-BY-SCENE BREAKDOWN:
+- Extract EVERY scene with its scene number (1, 2, 3, etc.)
+- For each scene provide:
+  * scene_number: sequential number (1, 2, 3...)
+  * slugline: the full slugline (e.g., "INT. COFFEE SHOP - DAY")
+  * location: just the location name
+  * int_ext: "INT" or "EXT"
+  * time_of_day: "DAY", "NIGHT", "DUSK", etc.
+  * page_number: estimated page number in script
+  * summary: 1-2 sentence summary of what happens in this scene
+  * characters_present: array of character names in this scene
+
 1. ELEMENT BREAKDOWN (scan through ALL scenes):
 - Extract ALL CHARACTERS from the entire script (name, estimated age range, gender if indicated, count ALL scenes they appear in, special requirements)
 - Identify lead roles (appears in 30%+ of scenes, has significant dialogue throughout)
@@ -142,6 +155,22 @@ Also provide:
           properties: {
             total_pages: { type: "number" },
             total_scenes: { type: "number" },
+            scenes: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  scene_number: { type: "number" },
+                  slugline: { type: "string" },
+                  location: { type: "string" },
+                  int_ext: { type: "string" },
+                  time_of_day: { type: "string" },
+                  page_number: { type: "number" },
+                  summary: { type: "string" },
+                  characters_present: { type: "array", items: { type: "string" } }
+                }
+              }
+            },
             characters: {
               type: "array",
               items: {
@@ -402,6 +431,8 @@ Also provide:
               className="space-y-8"
             >
               <AnalysisSummary analysis={currentAnalysis} />
+
+              <SceneBreakdown scenes={currentAnalysis.scenes} />
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <CharacterBreakdown characters={currentAnalysis.characters} />
