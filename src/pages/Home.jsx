@@ -83,97 +83,52 @@ export default function Home() {
         data: { status: 'analyzing', raw_text: scriptText.slice(0, 200000) }
       });
 
-      // Run comprehensive AI analysis (process up to 150+ pages)
+      // Run comprehensive AI analysis
       const analysisResult = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a professional film script analyst. Analyze this COMPLETE screenplay and extract detailed production data from the ENTIRE script.
-
-IMPORTANT: This is the full script. Make sure to analyze ALL scenes, ALL characters, ALL locations throughout the entire screenplay, not just the beginning.
+        prompt: `You are an expert Hollywood script analyst. Analyze this complete screenplay comprehensively.
 
 SCRIPT TEXT:
 ${scriptText.slice(0, 350000)}
 
-Perform comprehensive analysis of the ENTIRE screenplay IN THIS ORDER:
+Provide a complete analysis covering:
 
-0. LOGLINE & SYNOPSIS:
-- Create a compelling one-sentence logline following: "[Protagonist] must [Goal] before [Antagonist/Stakes] or else [Consequence]"
-- Write a 150-word synopsis covering: protagonist's ordinary world, inciting incident, main conflict, key turning points, climax, resolution, and central theme
+1. LOGLINE & SYNOPSIS
+- Logline: One compelling sentence in format "[Protagonist] must [Goal] or else [Consequence]"
+- Synopsis: 150-word story summary with key plot points
 
-1. STRUCTURAL BREAKDOWN:
+2. HERO'S JOURNEY (12 stages)
+Map each of these stages with page range, scene description, and purpose:
+Ordinary World, Call to Adventure, Refusal of the Call, Meeting the Mentor, Crossing the Threshold, Tests/Allies/Enemies, Approach to Inmost Cave, Ordeal, Reward, The Road Back, Resurrection, Return with the Elixir
 
-A. HERO'S JOURNEY (12 Stages):
-Map the script to Joseph Campbell's monomyth. For each stage provide:
-- stage: name (e.g., "Ordinary World", "Call to Adventure", etc.)
-- page_range: e.g., "Pages 1-12"
-- scene_reference: brief description of the scene
-- narrative_purpose: what this stage accomplishes
+3. THREE-ACT STRUCTURE
+Divide script into 3 acts with page ranges, percentages, emotional arcs, and turning points
 
-The 12 stages are: Ordinary World, Call to Adventure, Refusal of the Call, Meeting the Mentor, Crossing the Threshold, Tests/Allies/Enemies, Approach to Inmost Cave, Ordeal, Reward, The Road Back, Resurrection, Return with the Elixir
+4. EIGHT SEQUENCES
+Break into 8 sequences (A-H), each with title, page range, key scenes, and narrative function
 
-B. THREE-ACT STRUCTURE:
-Divide into Act I (Setup ~25%), Act II (Confrontation ~50%), Act III (Resolution ~25%)
-For each act provide:
-- page_range: e.g., "Pages 1-30"
-- percentage: % of total pages
-- emotional_arc: primary emotional journey
-- turning_points: array of key moments (Catalyst, Break into 2, Midpoint, All Is Lost, Break into 3, Finale)
+5. SCENES
+Extract all scenes with: scene number, slugline, location, INT/EXT, time of day, page number, brief summary, characters present
 
-C. EIGHT-SEQUENCE STRUCTURE:
-Break into 8 sequences of ~12-15 pages each
-For each sequence provide:
-- sequence_letter: "A" through "H"
-- title: creative title for the sequence
-- page_range: e.g., "Pages 1-12"
-- key_scenes: array of 3-4 bullet points
-- narrative_function: what this sequence accomplishes
+6. PRODUCTION ELEMENTS
+- Characters: name, age range, gender, scene count, special requirements, is_lead status
+- Props: name, category (common/specialty/weapons_stunts)
+- Wardrobe: description, character, period
+- Vehicles/Animals: type, description
+- VFX/SFX: type (vfx/sfx), description, complexity (simple/moderate/complex)
 
-2. SCENE-BY-SCENE BREAKDOWN:
-- Extract EVERY scene with its scene number (1, 2, 3, etc.)
-- For each scene provide:
-  * scene_number: sequential number (1, 2, 3...)
-  * slugline: the full slugline (e.g., "INT. COFFEE SHOP - DAY")
-  * location: just the location name
-  * int_ext: "INT" or "EXT"
-  * time_of_day: "DAY", "NIGHT", "DUSK", etc.
-  * page_number: estimated page number in script
-  * summary: 1-2 sentence summary of what happens in this scene
-  * characters_present: array of character names in this scene
+7. LOCATIONS
+All unique locations with INT/EXT, time of day, description, scene count
 
-3. ELEMENT BREAKDOWN (scan through ALL scenes):
-- Extract ALL CHARACTERS from the entire script (name, estimated age range, gender if indicated, count ALL scenes they appear in, special requirements)
-- Identify lead roles (appears in 30%+ of scenes, has significant dialogue throughout)
-- Extract ALL PROPS from every scene (categorize as "common", "specialty", or "weapons_stunts")
-- Extract ALL notable WARDROBE items with character and period info
-- Extract ALL VEHICLES and ANIMALS mentioned anywhere in the script
-- Identify ALL VFX and SFX shots throughout (type: "vfx" or "sfx", complexity: "simple", "moderate", or "complex")
+8. BUDGET ESTIMATE
+Min/max USD estimates for indie tier, top 3-5 cost drivers
 
-2. LOCATION BREAKDOWN (parse ALL sluglines):
-- Find EVERY slugline in the script (INT/EXT. LOCATION - TIME)
-- For each unique location: int_ext, time_of_day, brief description, total scene count
-- Make sure to count all occurrences of each location throughout the script
+9. GENRE & TONE
+Primary genre, sub-genres, confidence (0-100), humor scale (slapstick/dry/none), pacing (meditative/medium/frenetic), visual style (gritty/naturalistic/stylized), comparable films
 
-4. BUDGET ESTIMATE for "indie" tier:
-- Based on total cast size, location count, VFX shots, and special requirements
-- Provide realistic min and max estimates in USD
-- List top 3-5 cost drivers based on entire script
+10. PRODUCTION CHALLENGES
+Category (logistical/legal/scheduling/safety), description, severity (low/medium/high), scene reference
 
-5. GENRE & TONE (analyze complete narrative arc):
-- Primary genre and sub-genres based on full story
-- Confidence score (0-100)
-- Humor scale: "slapstick", "dry", or "none"
-- Pacing: "meditative", "medium", or "frenetic"  
-- Visual style: "gritty", "naturalistic", or "stylized"
-- 2-3 comparable films that match the overall tone
-
-6. PRODUCTION CHALLENGES (scan entire script):
-- Find ALL potential challenges throughout the script
-- Category: "logistical", "legal", "scheduling", or "safety"
-- Description of each challenge
-- Severity: "low", "medium", or "high"
-- Scene reference if applicable
-
-Also provide:
-- total_pages (estimate based on full text length, assume 1 page ≈ 1 minute ≈ 250 words)
-- total_scenes (count ALL unique sluglines in the entire script)`,
+Include total_pages and total_scenes count.`,
         response_json_schema: {
           type: "object",
           properties: {
