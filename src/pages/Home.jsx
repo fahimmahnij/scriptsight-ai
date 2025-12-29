@@ -90,7 +90,8 @@ export default function Home() {
 CRITICAL PARSING RULES:
 - EVERY slugline (INT/EXT. LOCATION - TIME) = a new scene
 - Scene numbers are sequential: 1, 2, 3, 4, etc.
-- Estimate page numbers accurately: average 1 page = 50-60 lines of dialogue/action
+- Page numbers: Look for actual page numbers in the text (often appear as numbers alone on a line). If not found, estimate conservatively: 2-3 scenes per page on average
+- DO NOT inflate page counts - scripts are typically 90-120 pages max
 - Count EVERY character appearance across ALL scenes
 - Track EVERY location occurrence throughout the script
 - Extract ALL props, wardrobe, vehicles mentioned in action lines
@@ -201,8 +202,8 @@ All challenges:
 - scene_reference
 
 FINAL COUNTS:
-- total_pages: accurate estimate (1 page ≈ 250-300 words)
-- total_scenes: count of ALL sluglines`,
+- total_pages: Look for page numbers in the script text OR estimate conservatively (typical feature script = 90-120 pages, average 2-3 scenes per page). DO NOT over-estimate.
+- total_scenes: exact count of ALL sluglines found`,
         response_json_schema: {
           type: "object",
           properties: {
