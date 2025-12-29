@@ -1,6 +1,7 @@
 import React from 'react';
 import AnalysisSummary from './AnalysisSummary';
 import LoglineSynopsis from './LoglineSynopsis';
+import NarrativeGalaxy from './NarrativeGalaxy';
 import HerosJourney from './HerosJourney';
 import ThreeActStructure from './ThreeActStructure';
 import EightSequences from './EightSequences';
@@ -20,11 +21,24 @@ export default function AnalysisPanel({ analysis, onBudgetTierChange }) {
       
       <LoglineSynopsis logline={analysis.logline} synopsis={analysis.synopsis} />
       
-      <div className="grid grid-cols-1 gap-8">
-        <HerosJourney heros_journey={analysis.heros_journey} />
-        <ThreeActStructure three_act_structure={analysis.three_act_structure} />
-        <EightSequences eight_sequences={analysis.eight_sequences} />
-      </div>
+      <NarrativeGalaxy
+        three_act_structure={analysis.three_act_structure}
+        eight_sequences={analysis.eight_sequences}
+        heros_journey={analysis.heros_journey}
+        scenes={analysis.scenes}
+      />
+      
+      <details className="group">
+        <summary className="cursor-pointer text-zinc-400 hover:text-white text-sm flex items-center gap-2 mb-4">
+          <span>View Traditional Breakdown</span>
+          <span className="text-xs">(Acts, Sequences, Journey)</span>
+        </summary>
+        <div className="grid grid-cols-1 gap-8 mt-4">
+          <HerosJourney heros_journey={analysis.heros_journey} />
+          <ThreeActStructure three_act_structure={analysis.three_act_structure} />
+          <EightSequences eight_sequences={analysis.eight_sequences} />
+        </div>
+      </details>
       
       <SceneBreakdown scenes={analysis.scenes} />
       

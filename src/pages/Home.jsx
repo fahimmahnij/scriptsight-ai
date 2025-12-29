@@ -83,52 +83,126 @@ export default function Home() {
         data: { status: 'analyzing', raw_text: scriptText.slice(0, 200000) }
       });
 
-      // Run comprehensive AI analysis
+      // Run comprehensive AI analysis with precise parsing
       const analysisResult = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an expert Hollywood script analyst. Analyze this complete screenplay comprehensively.
+        prompt: `You are an expert Hollywood script analyst with deep knowledge of screenplay format. Analyze this COMPLETE screenplay with PRECISE accuracy.
+
+CRITICAL PARSING RULES:
+- EVERY slugline (INT/EXT. LOCATION - TIME) = a new scene
+- Scene numbers are sequential: 1, 2, 3, 4, etc.
+- Estimate page numbers accurately: average 1 page = 50-60 lines of dialogue/action
+- Count EVERY character appearance across ALL scenes
+- Track EVERY location occurrence throughout the script
+- Extract ALL props, wardrobe, vehicles mentioned in action lines
 
 SCRIPT TEXT:
 ${scriptText.slice(0, 350000)}
 
-Provide a complete analysis covering:
+ANALYSIS REQUIREMENTS:
 
 1. LOGLINE & SYNOPSIS
-- Logline: One compelling sentence in format "[Protagonist] must [Goal] or else [Consequence]"
-- Synopsis: 150-word story summary with key plot points
+- Logline: "[Protagonist] must [Goal] or else [Consequence]"
+- Synopsis: Exactly 150 words covering full story arc
 
-2. HERO'S JOURNEY (12 stages)
-Map each of these stages with page range, scene description, and purpose:
-Ordinary World, Call to Adventure, Refusal of the Call, Meeting the Mentor, Crossing the Threshold, Tests/Allies/Enemies, Approach to Inmost Cave, Ordeal, Reward, The Road Back, Resurrection, Return with the Elixir
+2. HERO'S JOURNEY (All 12 stages)
+For EACH stage provide accurate page ranges from the script:
+- Ordinary World
+- Call to Adventure  
+- Refusal of the Call
+- Meeting the Mentor
+- Crossing the Threshold
+- Tests, Allies, Enemies
+- Approach to Inmost Cave
+- Ordeal
+- Reward
+- The Road Back
+- Resurrection
+- Return with the Elixir
+
+Format: {stage, page_range: "1-8", scene_reference: "specific scene description", narrative_purpose}
 
 3. THREE-ACT STRUCTURE
-Divide script into 3 acts with page ranges, percentages, emotional arcs, and turning points
+Calculate precise percentages from total page count:
+- Act I: ~25% (pages and percentage)
+- Act II: ~50% (pages and percentage)  
+- Act III: ~25% (pages and percentage)
+Each with: page_range, percentage, emotional_arc, turning_points array
 
 4. EIGHT SEQUENCES
-Break into 8 sequences (A-H), each with title, page range, key scenes, and narrative function
+Divide into 8 equal sequences based on total pages:
+A through H, each with: sequence_letter, title, page_range, key_scenes (3-4 items), narrative_function
 
-5. SCENES
-Extract all scenes with: scene number, slugline, location, INT/EXT, time of day, page number, brief summary, characters present
+5. SCENE BREAKDOWN - CRITICAL ACCURACY
+Parse EVERY slugline in order. For each scene:
+- scene_number: 1, 2, 3, etc (sequential)
+- slugline: exact text "INT. LOCATION - DAY"
+- location: extract location name only
+- int_ext: "INT" or "EXT"
+- time_of_day: "DAY", "NIGHT", "DAWN", "DUSK", etc
+- page_number: accurate estimate
+- summary: 1-2 sentences
+- characters_present: array of ALL character names in this scene
 
-6. PRODUCTION ELEMENTS
-- Characters: name, age range, gender, scene count, special requirements, is_lead status
-- Props: name, category (common/specialty/weapons_stunts)
-- Wardrobe: description, character, period
-- Vehicles/Animals: type, description
-- VFX/SFX: type (vfx/sfx), description, complexity (simple/moderate/complex)
+6. CHARACTER ANALYSIS - COUNT ACCURATELY
+For EVERY character mentioned:
+- name: character name
+- age_range: "20s", "30s", "40s", etc
+- gender: if indicated
+- scene_count: COUNT exact number of scenes they appear in
+- special_requirements: stunts, accents, physical traits
+- is_lead: true if appears in 30%+ of scenes
 
-7. LOCATIONS
-All unique locations with INT/EXT, time of day, description, scene count
+7. PROPS - EXTRACT ALL
+From action lines, extract every prop:
+- name: prop name
+- category: "common", "specialty", or "weapons_stunts"
 
-8. BUDGET ESTIMATE
-Min/max USD estimates for indie tier, top 3-5 cost drivers
+8. WARDROBE - NOTABLE ITEMS
+- description, character, period (modern/period/futuristic)
 
-9. GENRE & TONE
-Primary genre, sub-genres, confidence (0-100), humor scale (slapstick/dry/none), pacing (meditative/medium/frenetic), visual style (gritty/naturalistic/stylized), comparable films
+9. VEHICLES & ANIMALS
+Every vehicle and animal mentioned:
+- type: "vehicle" or "animal"
+- description
 
-10. PRODUCTION CHALLENGES
-Category (logistical/legal/scheduling/safety), description, severity (low/medium/high), scene reference
+10. VFX/SFX - ALL EFFECTS
+- type: "vfx" or "sfx"
+- description
+- complexity: "simple", "moderate", or "complex"
 
-Include total_pages and total_scenes count.`,
+11. LOCATIONS - COUNT OCCURRENCES
+For each unique location, count how many scenes use it:
+- slugline: full location slugline
+- int_ext: "INT", "EXT", or "INT/EXT"
+- time_of_day
+- description
+- scene_count: total times this location appears
+
+12. BUDGET ESTIMATE
+Based on cast size, locations, VFX, special requirements:
+- min: USD
+- max: USD
+- top_cost_drivers: array of 5 items
+
+13. GENRE & TONE
+- primary_genre
+- sub_genres: array
+- confidence: 0-100
+- humor_scale: "slapstick", "dry", "none"
+- pacing_scale: "meditative", "medium", "frenetic"
+- visual_style: "gritty", "naturalistic", "stylized"
+- comparable_films: array of 2-3 films
+
+14. PRODUCTION CHALLENGES
+All challenges:
+- category: "logistical", "legal", "scheduling", "safety"
+- description
+- severity: "low", "medium", "high"
+- scene_reference
+
+FINAL COUNTS:
+- total_pages: accurate estimate (1 page ≈ 250-300 words)
+- total_scenes: count of ALL sluglines`,
         response_json_schema: {
           type: "object",
           properties: {
